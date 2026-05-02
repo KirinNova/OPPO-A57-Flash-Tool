@@ -24,7 +24,7 @@
 ---
 
 ## 支持机型 | Supported Device
-- OPPO A57（2016 标准版）
+- OPPO A57（2016）
 
 ## 环境要求 | System Requirements
 1. 系统：Windows 7/8/10/11（32/64位通用）
