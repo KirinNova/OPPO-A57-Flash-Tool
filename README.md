@@ -7,13 +7,8 @@
 ---
 
 ## 项目简介 | Project Overview
-### 中文
 本工具为OPPO A57 (2016) 定制自动化刷机脚本，依托EDL线刷工具、ADB/Fastboot平台工具开发。解决原厂手动刷机步骤繁琐、易报错、门槛高的痛点，全程图形文字引导+自动文件校验，大幅降低刷机变砖风险。
 刷机流程：9008刷入lk2nd二级引导 → 自动识别Fastboot设备 → 一键刷入全核心分区 → 清空数据缓存 → 开机自动修复WiFi与网络时间。
-
-### English
-A fully automatic one-click flashing script exclusively for OPPO A57 (2016), built with EDL, ADB and Fastboot binaries. It simplifies complicated manual flashing procedures, reduces operation errors and lowers the threshold for beginners. With visual guidance and automatic file check, it minimizes bricking risks.
-Workflow: Flash lk2nd bootloader via 9008 Mode → Auto detect Fastboot device → Flash full system partitions → Wipe data & cache → Auto fix Wi-Fi and time sync after boot.
 
 ---
 
