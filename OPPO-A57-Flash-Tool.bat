@@ -373,17 +373,45 @@ if errorlevel 1 (
 echo [成功] 分区清理完成
 echo.
 
-:: ====================== 第十步：重启设备并修复WiFi和时间 ======================
+:: ====================== 第十步：重启设备并自动检测ADB（15分钟超时） ======================
 echo [阶段9/9] 重启设备...
 %FASTBOOT_TOOL% reboot
-echo 设备正在重启，请等待设备完全开机并连接USB调试...
-echo 请确保：
-echo 1. 设备已开启USB调试
-echo 2. 设备已授权当前电脑的USB调试权限
-echo 3. 设备已连接WiFi或移动数据
+echo 设备正在重启，请等待设备完全开机并自动开启USB调试...
+echo 重要：请提前在系统中开启USB调试并授权本电脑！
+echo 脚本将自动等待设备连接ADB，超时时间：15分钟
 echo.
-echo 准备完成后按任意键继续...
-pause >nul
+
+:: ====================== 自动检测ADB设备 15分钟（900秒）超时 ======================
+:detect_adb_auto
+echo [阶段9/9] 自动检测ADB设备中（15分钟超时）...
+set "adb_timeout=900"
+set "adb_device_found=0"
+
+:adb_loop
+if %adb_timeout% equ 0 (
+    echo [错误] 15分钟内未检测到ADB设备！
+    echo 排查方案：
+    echo 1. 设备是否完全开机进入系统
+    echo 2. 是否开启USB调试并授权电脑
+    echo 3. USB连接是否正常
+    call :retry_or_exit "ADB设备自动检测失败"
+    goto :detect_adb_auto
+)
+
+echo 剩余等待时间：%adb_timeout% 秒 (15分钟超时)
+%ADB_TOOL% devices | findstr /r "device$" >nul
+if %errorlevel% equ 0 (
+    set "adb_device_found=1"
+    goto :adb_detected
+)
+
+timeout /t 1 /nobreak >nul
+set /a adb_timeout-=1
+goto :adb_loop
+
+:adb_detected
+echo [成功] 已自动检测到ADB设备！
+echo.
 cls
 
 :: ====================== WiFi小叉消除 + 时间同步 ======================
@@ -394,29 +422,6 @@ echo.
 :: 启动ADB服务
 echo 启动ADB服务...
 %ADB_TOOL% start-server
-
-:: 检测设备连接
-echo 检测设备连接...
-%ADB_TOOL% devices
-echo.
-set "device_found="
-for /f "tokens=2" %%a in ('%ADB_TOOL% devices ^| findstr /r "device$"') do (
-    set "device_found=1"
-)
-
-if not defined device_found (
-    echo [错误] 未检测到已授权的设备
-    echo 排查方案：
-    echo 1. 设备是否通过USB连接电脑
-    echo 2. 设备是否开启USB调试
-    echo 3. 设备是否授权当前电脑的USB调试权限
-    echo 4. 是否安装ADB驱动程序
-    call :retry_or_exit "WiFi/时间修复阶段 设备检测失败"
-    goto :fix_wifi_time
-)
-
-echo [成功] 设备已连接并授权
-echo.
 
 :: 清除原有网络验证配置
 echo 清除原有网络验证配置...
