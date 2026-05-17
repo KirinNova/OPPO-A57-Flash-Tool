@@ -492,15 +492,15 @@ set /p "choice=请选择操作 [1=重新尝试 2=退出脚本]："
 if /i "%choice%"=="1" (
     echo 正在重新尝试 %error_stage% 阶段...
     echo.
-    exit /b 0  :: 仅退出函数，回到原失败位置重试
+    exit /b 0  
 ) else if /i "%choice%"=="2" (
     echo 用户选择退出脚本，即将关闭窗口...
     pause >nul
-    exit  :: 直接终止整个脚本进程，彻底退出
+    exit  
 ) else (
     echo 输入无效，默认退出脚本...
     pause >nul
-    exit  :: 直接终止整个脚本进程，彻底退出
+    exit  
 )
 
 :: ====================== MD5 校验函数 (请勿修改) ======================
@@ -509,17 +509,15 @@ set "file_path=%~1"
 set "expected_md5=%~2"
 set "file_desc=%~3"
 
-:: 计算文件MD5
 for /f "skip=1 tokens=* delims=" %%a in ('CertUtil -hashfile "%file_path%" MD5 ^| findstr /v "CertUtil"') do (
     set "actual_md5=%%a"
     goto :process_md5
 )
 
 :process_md5
-:: 去除MD5中的空格
+
 set "actual_md5=%actual_md5: =%"
 
-:: 对比MD5
 if /i "%actual_md5%"=="%expected_md5%" (
     echo [成功] %file_desc% MD5校验通过
     exit /b 0
